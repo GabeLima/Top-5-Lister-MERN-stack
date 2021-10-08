@@ -96,6 +96,7 @@ export const useGlobalStore = () => {
                     listMarkedForDeletion: null
                 });
             }
+
             default:
                 return store;
         }
@@ -137,6 +138,59 @@ export const useGlobalStore = () => {
         asyncChangeListName(id);
     }
 
+    // THIS FUNCTION RETURNS THE LIST OF THE REQUESTED ID
+    store.getList = function (id) {
+        async function asyncChangeListName(id) {
+            let response = await api.getTop5ListById(id);
+            return response;
+        }
+        return asyncChangeListName(id);
+    }
+
+    //DELETE LIST
+    store.deleteList = function (id) {
+        console.log("delete list passed the id: ", id);
+        async function asyncChangeListName(id) {
+            let response = await api.deleteTop5ListById(id);
+            
+            // I think i gotta update the list
+            return response;
+        }
+        return asyncChangeListName(id);
+    }
+
+    // //THIS FUNCTION IS FOR CREATING A NEW LIST... NOT EVEN CLOSE TO DONE
+    // store.addList = function () {
+    //     // GET THE LIST
+    //     async function asyncChangeListName() {
+    //         let response = await api.createTop5List();
+    //         if (response.data.success) {
+    //             let top5List = response.data.top5List;
+    //             top5List.name = "Untitled List";
+    //             async function updateList(top5List) {
+    //                 response = await api.updateTop5ListById(top5List._id, top5List);
+    //                 if (response.data.success) {
+    //                     async function getListPairs(top5List) {
+    //                         response = await api.getTop5ListPairs();
+    //                         if (response.data.success) {
+    //                             let pairsArray = response.data.idNamePairs;
+    //                             storeReducer({
+    //                                 type: GlobalStoreActionType.CHANGE_LIST_NAME,
+    //                                 payload: {
+    //                                     idNamePairs: pairsArray,
+    //                                     top5List: top5List
+    //                                 }
+    //                             });
+    //                         }
+    //                     }
+    //                     getListPairs(top5List);
+    //                 }
+    //             }
+    //             updateList(top5List);
+    //         }
+    //     }
+    //     asyncChangeListName(id);
+    // }
     // THIS FUNCTION PROCESSES CLOSING THE CURRENTLY LOADED LIST
     store.closeCurrentList = function () {
         storeReducer({
@@ -231,6 +285,7 @@ export const useGlobalStore = () => {
 
     // THIS FUNCTION ENABLES THE PROCESS OF EDITING A LIST NAME
     store.setIsListNameEditActive = function () {
+        console.log("passing payload")
         storeReducer({
             type: GlobalStoreActionType.SET_LIST_NAME_EDIT_ACTIVE,
             payload: null
