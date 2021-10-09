@@ -101,13 +101,19 @@ export const useGlobalStore = () => {
             }
             //START DELETING A LIST
             case GlobalStoreActionType.SET_LIST_MARKED_FOR_DELETION: {
+                let newListMarkedForDeletion = null;
+                let newCurrentList = null;
+                if(payload !== null){
+                    newCurrentList = payload;
+                    newListMarkedForDeletion = payload._id;
+                }
                 return setStore({
                     idNamePairs: store.idNamePairs,
-                    currentList: store.currentList,
+                    currentList: newCurrentList,
                     newListCounter: store.newListCounter,
                     isListNameEditActive: store.isListNameEditActive,
                     isItemEditActive: store.isItemEditActive,
-                    listMarkedForDeletion: payload
+                    listMarkedForDeletion: newListMarkedForDeletion
                 });
             }
             default:
@@ -281,23 +287,25 @@ export const useGlobalStore = () => {
 
     store.markListForDeletion = function(id){
         async function asyncMarkListForDeletion(id) {
-            const response = await api.getTop5ListById(id);
-            if (response.data.success) {
-                console.log(response);
-                //store.setCurrentList(id);
-                storeReducer({
-                    type: GlobalStoreActionType.SET_CURRENT_LIST,
-                    payload: response.data.top5List
-                });
-                console.log("Set the stores current list", response.data.top5List);
-                storeReducer({
-                    type: GlobalStoreActionType.SET_LIST_MARKED_FOR_DELETION,
-                    payload: response.data.top5List._id
-                });
-                let waitResponse = await api.getTop5ListById(id);
+            async function synchronize(id){
+                const response = await api.getTop5ListById(id);
+                if (response.data.success) {
+                    console.log(response);
+                    console.log("Set the stores current list", response.data.top5List);
+                    storeReducer({
+                        type: GlobalStoreActionType.SET_LIST_MARKED_FOR_DELETION,
+                        payload: response.data.top5List
+                    });
+                    return true;
+                    //let waitResponse = await api.getTop5ListById(id);
+                }
             }
+            await synchronize(id);
+            console.log("Current list before opening the delete modal: ", store.currentList);
+            let modal = document.getElementById("delete-modal");
+            modal.classList.add("is-visible");
         }
-        asyncMarkListForDeletion(id).then(store.showDeleteModal());
+        asyncMarkListForDeletion(id);
     }
 
     store.showDeleteModal = function(){
