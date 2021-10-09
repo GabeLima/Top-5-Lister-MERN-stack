@@ -175,6 +175,10 @@ export const useGlobalStore = () => {
 
     // THIS FUNCTION PROCESSES CLOSING THE CURRENTLY LOADED LIST
     store.closeCurrentList = function () {
+        console.log("Calling close current list");
+        tps.clearAllTransactions();
+        // let modal = document.getElementById("close-button");
+        // modal.classList.add(" disabled");
         storeReducer({
             type: GlobalStoreActionType.CLOSE_CURRENT_LIST,
             payload: {}
@@ -259,10 +263,23 @@ export const useGlobalStore = () => {
         asyncUpdateCurrentList();
     }
     store.undo = function () {
-        tps.undoTransaction();
+        if(tps.hasTransactionToUndo()){
+            console.log("Undo!");
+            tps.undoTransaction();
+        }
     }
+
     store.redo = function () {
-        tps.doTransaction();
+        if(tps.hasTransactionToRedo()){
+            console.log("Redo!");
+            tps.doTransaction();
+        }
+    }
+    store.hasTransactionToUndo = function() {
+        return tps.hasTransactionToUndo();
+    }
+    store.hasTransactionToRedo = function() {
+        return tps.hasTransactionToRedo();
     }
 
     store.addChangeItemTransaction = function (index, oldText, newText) {
