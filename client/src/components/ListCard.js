@@ -1,6 +1,7 @@
 import { useContext, useState } from 'react'
 import { useHistory } from 'react-router-dom'
 import { GlobalStoreContext } from '../store'
+import DeleteModal from './DeleteModal'
 /*
     This is a card in our list of top 5 lists. It lets select
     a list for editing and it has controls for changing its 
@@ -62,6 +63,13 @@ function ListCard(props) {
         setText(event.target.value );
     }
 
+    function handleDeleteList(event){
+        event.stopPropagation();
+        console.log("Inside handle delete list...");
+        let id = event.target.id.substring("delete-list-".length);
+        store.markListForDeletion(id);
+    }
+
     let selectClass = "unselected-list-card";
     if (selected) {
         selectClass = "selected-list-card";
@@ -86,6 +94,7 @@ function ListCard(props) {
                 disabled={cardStatus}
                 type="button"
                 id={"delete-list-" + idNamePair._id}
+                onClick = {handleDeleteList}
                 className="list-card-button"
                 value={"\u2715"}
             />

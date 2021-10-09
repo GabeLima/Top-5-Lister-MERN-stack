@@ -17,6 +17,7 @@ const ListSelector = () => {
     }, []);
 
     function addListCallback() {
+        console.log("Inside add list callback");
         store.createNewList();
     }
 
@@ -45,7 +46,9 @@ const ListSelector = () => {
                 {
                     listCard
                 }
-                <DeleteModal />
+                                <DeleteModal 
+                    markedForDeletion = {store.isAListMarkedForDeletion()}
+                />
             </div>
         </div>)
 }

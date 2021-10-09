@@ -3,6 +3,7 @@ import jsTPS from '../common/jsTPS'
 import api from '../api'
 import MoveItem_Transaction from '../transactions/MoveItem_Transaction'
 import ChangeItem_Transaction from '../transactions/ChangeItem_Transaction'
+import DeleteModal from '../components/DeleteModal'
 export const GlobalStoreContext = createContext({});
 /*
     This is our global data store. Note that it uses the Flux design pattern,
@@ -18,7 +19,8 @@ export const GlobalStoreActionType = {
     CLOSE_CURRENT_LIST: "CLOSE_CURRENT_LIST",
     LOAD_ID_NAME_PAIRS: "LOAD_ID_NAME_PAIRS",
     SET_CURRENT_LIST: "SET_CURRENT_LIST",
-    SET_LIST_NAME_EDIT_ACTIVE: "SET_LIST_NAME_EDIT_ACTIVE"
+    SET_LIST_NAME_EDIT_ACTIVE: "SET_LIST_NAME_EDIT_ACTIVE",
+    SET_LIST_MARKED_FOR_DELETION: "SET_LIST_MARKED_FOR_DELETION"
 }
 
 // WE'LL NEED THIS TO PROCESS TRANSACTIONS
@@ -95,6 +97,17 @@ export const useGlobalStore = () => {
                     isListNameEditActive: true,
                     isItemEditActive: false,
                     listMarkedForDeletion: null
+                });
+            }
+            //START DELETING A LIST
+            case GlobalStoreActionType.SET_LIST_MARKED_FOR_DELETION: {
+                return setStore({
+                    idNamePairs: store.idNamePairs,
+                    currentList: store.currentList,
+                    newListCounter: store.newListCounter,
+                    isListNameEditActive: store.isListNameEditActive,
+                    isItemEditActive: store.isItemEditActive,
+                    listMarkedForDeletion: payload
                 });
             }
             default:
@@ -264,6 +277,67 @@ export const useGlobalStore = () => {
             type: GlobalStoreActionType.SET_LIST_NAME_EDIT_ACTIVE,
             payload: null
         });
+    }
+
+    store.markListForDeletion = function(id){
+        async function asyncMarkListForDeletion(id) {
+            const response = await api.getTop5ListById(id);
+            if (response.data.success) {
+                console.log(response);
+                //store.setCurrentList(id);
+                storeReducer({
+                    type: GlobalStoreActionType.SET_CURRENT_LIST,
+                    payload: response.data.top5List
+                });
+                console.log("Set the stores current list", response.data.top5List);
+                storeReducer({
+                    type: GlobalStoreActionType.SET_LIST_MARKED_FOR_DELETION,
+                    payload: response.data.top5List._id
+                });
+                let waitResponse = await api.getTop5ListById(id);
+            }
+        }
+        asyncMarkListForDeletion(id).then(store.showDeleteModal());
+    }
+
+    store.showDeleteModal = function(){
+        console.log("Current list before opening the delete modal: ", store.currentList);
+        let modal = document.getElementById("delete-modal");
+        modal.classList.add("is-visible");
+    }
+
+    store.isAListMarkedForDeletion = function(){
+        if(!store){
+            return false;
+        }
+        return store.listMarkedForDeletion !== null;
+    }
+
+    store.hideDeleteListModal = function () {
+        async function asyncHideDeleteListModal() {
+            console.log("Marking list for deletion...");
+            storeReducer({
+                type: GlobalStoreActionType.SET_LIST_MARKED_FOR_DELETION,
+                payload: null
+            });
+        }
+        asyncHideDeleteListModal();
+        let modal = document.getElementById("delete-modal");
+        modal.classList.remove("is-visible");
+    }
+
+    store.deleteMarkedList = function (){
+        async function asyncDeleteList() {
+            let markedListId = store.listMarkedForDeletion;
+            if(markedListId != null){
+                let response = await api.deleteTop5ListById(markedListId);
+                if(response.data.success){
+                    store.loadIdNamePairs();
+                }
+            }
+        }
+        asyncDeleteList();
+        store.hideDeleteListModal();
     }
 
     // THIS GIVES OUR STORE AND ITS REDUCER TO ANY COMPONENT THAT NEEDS IT
