@@ -37,9 +37,10 @@ function Top5Item(props) {
         let sourceId = event.dataTransfer.getData("item");
         sourceId = sourceId.substring(sourceId.indexOf("-") + 1);
         setDraggedTo(false);
-
-        // UPDATE THE LIST
-        store.addMoveItemTransaction(sourceId, targetId);
+        // UPDATE THE LIST if the source and target arent the same
+        if(sourceId !== targetId){
+            store.addMoveItemTransaction(sourceId, targetId);
+        }
     }
 
     function handleOnClick(event, newEditNumber) {
