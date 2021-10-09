@@ -136,6 +136,20 @@ export const useGlobalStore = () => {
         }
         asyncChangeListName(id);
     }
+    //CREATING A NEW LIST...
+    store.createNewList = function (){
+        async function asyncCreateNewList() {
+            let body = {"name": "Untitled List", "items": ["", "", "", "", ""]}
+            let response = await api.createTop5List(body);
+            if(response.data.success){
+                let id = response.data.top5List._id;
+                console.log("New list id: ", id);
+                store.loadIdNamePairs();
+                store.setCurrentList(id);
+            }
+        }
+        asyncCreateNewList();
+    }
 
     // THIS FUNCTION PROCESSES CLOSING THE CURRENTLY LOADED LIST
     store.closeCurrentList = function () {
