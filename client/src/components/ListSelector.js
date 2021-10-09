@@ -38,6 +38,7 @@ const ListSelector = () => {
         <div id="top5-list-selector">
             <div id="list-selector-heading">
                 <input
+                    //disabled = {store.isListNameEditActive === true}
                     type="button"
                     id="add-list-button"
                     className={store.isListNameEditActive === false? "top5-button": "top5-button-disabled"}
