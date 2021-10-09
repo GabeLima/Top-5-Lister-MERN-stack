@@ -18,7 +18,10 @@ const ListSelector = () => {
 
     function addListCallback() {
         console.log("Inside add list callback");
-        store.createNewList();
+        console.log(store.listNameActive);
+        if(store.isListNameEditActive === false){
+            store.createNewList();
+        }
     }
 
     let listCard = "";
@@ -37,7 +40,7 @@ const ListSelector = () => {
                 <input
                     type="button"
                     id="add-list-button"
-                    className="top5-button"
+                    className={store.isListNameEditActive === false? "top5-button": "top5-button-disabled"}
                     onClick = {addListCallback}
                     value="+" />
                 Your Lists

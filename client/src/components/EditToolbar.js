@@ -10,7 +10,6 @@ import { useHistory } from 'react-router-dom'
 function EditToolbar() {
     const { store } = useContext(GlobalStoreContext);
     const history = useHistory();
-
     let counter = 0;
     function refreshPage(){
         sessionStorage.setItem("reloading", "true");
@@ -40,10 +39,12 @@ function EditToolbar() {
     let enabledButtonClass = "top5-button";
     let disabledButtonClass = "top5-button-disabled";
     
-    function handleUndo() {
+    function handleUndo(event) {
+        //event.stopPropagation();
         store.undo();
     }
-    function handleRedo() {
+    function handleRedo(event) {
+
         store.redo();
     }
     function handleClose() {
@@ -63,27 +64,28 @@ function EditToolbar() {
     if (store.isListNameEditActive) {
         editStatus = true;
     }
+    console.log("Item active: ", store.itemActive);
     return (
         <div id="edit-toolbar">
             <div
                 disabled={editStatus}
                 id='undo-button'
                 onClick={handleUndo}
-                className={store.currentList != null && store.hasTransactionToUndo() ? enabledButtonClass : disabledButtonClass}>
+                className={store.currentList != null && store.hasTransactionToUndo() && store.itemActive === false ? enabledButtonClass : disabledButtonClass}>
                 &#x21B6;
             </div>
             <div
                 disabled={editStatus}
                 id='redo-button'
                 onClick={handleRedo}
-                className={store.currentList != null && store.hasTransactionToRedo() ? enabledButtonClass : disabledButtonClass}>
+                className={store.currentList != null && store.hasTransactionToRedo() && store.itemActive === false ? enabledButtonClass : disabledButtonClass}>
                 &#x21B7;
             </div>
             <div
                 disabled={editStatus}
                 id='close-button'
                 onClick={handleClose}
-                className={store.currentList != null && store.listMarkedForDeletion == null? enabledButtonClass : disabledButtonClass}>
+                className={store.currentList != null && store.listMarkedForDeletion == null && store.itemActive === false ? enabledButtonClass : disabledButtonClass}>
                 &#x24E7;
             </div>
         </div>

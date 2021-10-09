@@ -44,6 +44,8 @@ function Top5Item(props) {
     }
 
     function handleOnClick(event, newEditNumber) {
+        store.setItemActive(true);
+        console.log("Item active updated: ", store.itemActive);
         event.preventDefault();
         event.autoFocus = true;
         console.log("New index number: ", newEditNumber);
@@ -58,6 +60,8 @@ function Top5Item(props) {
 
     function handleBlur(event) {
         event.preventDefault();
+        store.setItemActive(false);
+        console.log("Item active updated: ", store.itemActive);
         setEditNumber(-1);
         saveAndUpdate(event)
     }
