@@ -22,6 +22,7 @@ function EditToolbar() {
     }
     function handleClose() {
         //console.log(history);
+        console.log(store.currentList);
         if(store.currentList !== null){
             history.push("/");
             store.closeCurrentList();
@@ -51,7 +52,7 @@ function EditToolbar() {
                 disabled={editStatus}
                 id='close-button'
                 onClick={handleClose}
-                className={store.currentList != null? enabledButtonClass : disabledButtonClass}>
+                className={store.currentList != null && store.listMarkedForDeletion == null? enabledButtonClass : disabledButtonClass}>
                 &#x24E7;
             </div>
         </div>

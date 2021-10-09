@@ -20,7 +20,8 @@ export const GlobalStoreActionType = {
     LOAD_ID_NAME_PAIRS: "LOAD_ID_NAME_PAIRS",
     SET_CURRENT_LIST: "SET_CURRENT_LIST",
     SET_LIST_NAME_EDIT_ACTIVE: "SET_LIST_NAME_EDIT_ACTIVE",
-    SET_LIST_MARKED_FOR_DELETION: "SET_LIST_MARKED_FOR_DELETION"
+    SET_LIST_MARKED_FOR_DELETION: "SET_LIST_MARKED_FOR_DELETION",
+    INCREMENT_LIST_COUNTER: "INCREMENT_LIST_COUNTER"
 }
 
 // WE'LL NEED THIS TO PROCESS TRANSACTIONS
@@ -116,6 +117,17 @@ export const useGlobalStore = () => {
                     listMarkedForDeletion: newListMarkedForDeletion
                 });
             }
+            // INCREMENT LIST COUNTER
+            case GlobalStoreActionType.INCREMENT_LIST_COUNTER: {
+                return setStore({
+                    idNamePairs: store.idNamePairs,
+                    currentList: store.currentList,
+                    newListCounter: payload,
+                    isListNameEditActive: store.isListNameEditActive,
+                    isItemEditActive: store.isItemEditActive,
+                    listMarkedForDeletion: store.listMarkedForDeletion
+                });
+            }
             default:
                 return store;
         }
@@ -161,13 +173,30 @@ export const useGlobalStore = () => {
     //CREATING A NEW LIST...
     store.createNewList = function (){
         async function asyncCreateNewList() {
-            let body = {"name": "Untitled List", "items": ["", "", "", "", ""]}
+            console.log(store.idNamePairs);
+            let minId = 0;
+            for(let i = 0; i < store.idNamePairs.length; i++){
+                if (store.idNamePairs[i].name.includes("Untitled List ")){
+                    minId = parseInt(store.idNamePairs[i].name.substring("Untitled List ".length))
+                    if(minId >= store.newListCounter){
+                        store.newListCounter = minId + 1;
+                    }
+                }
+            }
+            console.log("Old new list counter: ", store.newListCounter);
+            let body = {"name": "Untitled List " + store.newListCounter, "items": ["", "", "", "", ""]}
             let response = await api.createTop5List(body);
             if(response.data.success){
                 let id = response.data.top5List._id;
                 console.log("New list id: ", id);
                 store.loadIdNamePairs();
                 store.setCurrentList(id);
+                // storeReducer({
+                //     type: GlobalStoreActionType.INCREMENT_LIST_COUNTER,
+                //     payload: store.newListCounter + 1
+                // });
+                store.newListCounter = store.newListCounter + 1;
+                console.log("new list counter: ", store.newListCounter);
             }
         }
         asyncCreateNewList();
@@ -353,17 +382,33 @@ export const useGlobalStore = () => {
 
     store.deleteMarkedList = function (){
         async function asyncDeleteList() {
-            let markedListId = store.listMarkedForDeletion;
-            if(markedListId != null){
-                let response = await api.deleteTop5ListById(markedListId);
-                if(response.data.success){
-                    store.loadIdNamePairs();
+            try{
+                let markedListId = store.listMarkedForDeletion;
+                console.log("ATTEMPTING TO DELETE LIST W/ ID: ", markedListId);
+                if(markedListId != null){
+                    let response = await api.deleteTop5ListById(markedListId);
+                    if(response.data.success){
+                        //store.loadIdNamePairs();
+                    }
+                    else if(response.status === 404) {
+                        throw "404 error";
+                        //return Promise.reject('error 404')
+                    }
                 }
             }
+            catch(err){
+                console.log(err);
+            }
         }
+        //asyncDeleteList("API FAILED TO FIND THE LIST MARKED FOR DELETION: ", store.listMarkedForDeletion);
         asyncDeleteList();
         store.hideDeleteListModal();
+        store.loadIdNamePairs();
     }
+    window.addEventListener("unhandledrejection", function(promiseRejectionEvent) { 
+        console.log("ERROR EVENT HANDLER");
+        // handle error here, for example log   
+    });
 
     // THIS GIVES OUR STORE AND ITS REDUCER TO ANY COMPONENT THAT NEEDS IT
     return { store, storeReducer };
