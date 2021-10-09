@@ -42,16 +42,20 @@ function ListCard(props) {
     function handleKeyPress(event) {
         if (event.code === "Enter" || event.code=== "NumpadEnter") {
             console.log(idNamePair);
-            if(idNamePair.name !== event.target.value){
-                let id = event.target.id.substring("list-".length);
-                store.changeListName(id, text);
-            }
-            else{
-                //Cheap way of re-enabling the edit list buttons
-                store.loadIdNamePairs();
-            }
-            toggleEdit();
+            handleOnBlur(event);
         }
+    }
+
+    function handleOnBlur(event) {
+        if(idNamePair.name !== event.target.value){
+            let id = event.target.id.substring("list-".length);
+            store.changeListName(id, text);
+        }
+        else{
+            //Cheap way of re-enabling the edit list buttons
+            store.loadIdNamePairs();
+        }
+        toggleEdit();
     }
 
     function handleUpdateText(event) {
@@ -104,6 +108,7 @@ function ListCard(props) {
                 autoFocus
                 onKeyPress={handleKeyPress}
                 onChange={handleUpdateText}
+                onBlur = {handleOnBlur}
                 defaultValue={idNamePair.name}
             />;
     }
