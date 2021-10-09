@@ -2,6 +2,7 @@ import { createContext, useState } from 'react'
 import jsTPS from '../common/jsTPS'
 import api from '../api'
 import MoveItem_Transaction from '../transactions/MoveItem_Transaction'
+import ChangeItem_Transaction from '../transactions/ChangeItem_Transaction'
 export const GlobalStoreContext = createContext({});
 /*
     This is our global data store. Note that it uses the Flux design pattern,
@@ -111,6 +112,7 @@ export const useGlobalStore = () => {
             let response = await api.getTop5ListById(id);
             if (response.data.success) {
                 let top5List = response.data.top5List;
+                // console.log(top5List);
                 top5List.name = newName;
                 async function updateList(top5List) {
                     response = await api.updateTop5ListById(top5List._id, top5List);
@@ -136,6 +138,40 @@ export const useGlobalStore = () => {
         }
         asyncChangeListName(id);
     }
+
+    store.changeListItems = function (id, newItems) {
+        // GET THE LIST
+        async function asynChangeListItems(id) {
+            let response = await api.getTop5ListById(id);
+            if (response.data.success) {
+                let top5List = response.data.top5List;
+                top5List.items = newItems;
+                async function updateList(top5List) {
+                    response = await api.updateTop5ListById(top5List._id, top5List);
+                    if (response.data.success) {
+                        async function getListPairs(top5List) {
+                            response = await api.getTop5ListPairs();
+                            if (response.data.success) {
+                                let pairsArray = response.data.idNamePairs;
+                                //not sure if this reducer is correct!
+                                // storeReducer({
+                                //     type: GlobalStoreActionType.CHANGE_LIST_NAME,
+                                //     payload: {
+                                //         idNamePairs: pairsArray,
+                                //         top5List: top5List
+                                //     }
+                                // });
+                            }
+                        }
+                        getListPairs(top5List);
+                    }
+                }
+                updateList(top5List);
+            }
+        }
+        asynChangeListItems(id);
+    }
+
     //CREATING A NEW LIST...
     store.createNewList = function (){
         async function asyncCreateNewList() {
@@ -242,6 +278,18 @@ export const useGlobalStore = () => {
     store.redo = function () {
         tps.doTransaction();
     }
+
+    store.addChangeItemTransaction = function (index, oldText, newText) {
+        let transaction = new ChangeItem_Transaction(store, index, oldText, newText);
+        tps.addTransaction(transaction);
+    }
+
+    store.changeItem = function (index, newText){
+        let items = store.currentList.items;
+        items[index] = newText;
+        store.updateCurrentList();
+    }
+
 
     // THIS FUNCTION ENABLES THE PROCESS OF EDITING A LIST NAME
     store.setIsListNameEditActive = function () {
