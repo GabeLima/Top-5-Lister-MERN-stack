@@ -40,9 +40,16 @@ function ListCard(props) {
     }
 
     function handleKeyPress(event) {
-        if (event.code === "Enter") {
-            let id = event.target.id.substring("list-".length);
-            store.changeListName(id, text);
+        if (event.code === "Enter" || event.code=== "NumpadEnter") {
+            console.log(idNamePair);
+            if(idNamePair.name !== event.target.value){
+                let id = event.target.id.substring("list-".length);
+                store.changeListName(id, text);
+            }
+            else{
+                //Cheap way of re-enabling the edit list buttons
+                store.loadIdNamePairs();
+            }
             toggleEdit();
         }
     }
@@ -94,6 +101,7 @@ function ListCard(props) {
                 id={"list-" + idNamePair._id}
                 className='list-card'
                 type='text'
+                autoFocus
                 onKeyPress={handleKeyPress}
                 onChange={handleUpdateText}
                 defaultValue={idNamePair.name}

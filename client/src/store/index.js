@@ -139,39 +139,6 @@ export const useGlobalStore = () => {
         asyncChangeListName(id);
     }
 
-    store.changeListItems = function (id, newItems) {
-        // GET THE LIST
-        async function asynChangeListItems(id) {
-            let response = await api.getTop5ListById(id);
-            if (response.data.success) {
-                let top5List = response.data.top5List;
-                top5List.items = newItems;
-                async function updateList(top5List) {
-                    response = await api.updateTop5ListById(top5List._id, top5List);
-                    if (response.data.success) {
-                        async function getListPairs(top5List) {
-                            response = await api.getTop5ListPairs();
-                            if (response.data.success) {
-                                let pairsArray = response.data.idNamePairs;
-                                //not sure if this reducer is correct!
-                                // storeReducer({
-                                //     type: GlobalStoreActionType.CHANGE_LIST_NAME,
-                                //     payload: {
-                                //         idNamePairs: pairsArray,
-                                //         top5List: top5List
-                                //     }
-                                // });
-                            }
-                        }
-                        getListPairs(top5List);
-                    }
-                }
-                updateList(top5List);
-            }
-        }
-        asynChangeListItems(id);
-    }
-
     //CREATING A NEW LIST...
     store.createNewList = function (){
         async function asyncCreateNewList() {
