@@ -16,6 +16,14 @@ const ListSelector = () => {
         store.loadIdNamePairs();
     }, []);
 
+    function addListCallback() {
+        console.log("Inside add list callback");
+        console.log(store.listNameActive);
+        if(store.isListNameEditActive === false){
+            store.createNewList();
+        }
+    }
+
     let listCard = "";
     if (store) {
         listCard = store.idNamePairs.map((pair) => (
@@ -30,9 +38,11 @@ const ListSelector = () => {
         <div id="top5-list-selector">
             <div id="list-selector-heading">
                 <input
+                    //disabled = {store.isListNameEditActive === true}
                     type="button"
                     id="add-list-button"
-                    className="top5-button"
+                    className={store.isListNameEditActive === false? "top5-button": "top5-button-disabled"}
+                    onClick = {addListCallback}
                     value="+" />
                 Your Lists
             </div>
@@ -40,7 +50,9 @@ const ListSelector = () => {
                 {
                     listCard
                 }
-                <DeleteModal />
+                                <DeleteModal 
+                    markedForDeletion = {store.isAListMarkedForDeletion()}
+                />
             </div>
         </div>)
 }

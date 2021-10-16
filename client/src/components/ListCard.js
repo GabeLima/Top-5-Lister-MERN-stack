@@ -1,6 +1,7 @@
 import { useContext, useState } from 'react'
 import { useHistory } from 'react-router-dom'
 import { GlobalStoreContext } from '../store'
+import DeleteModal from './DeleteModal'
 /*
     This is a card in our list of top 5 lists. It lets select
     a list for editing and it has controls for changing its 
@@ -40,15 +41,33 @@ function ListCard(props) {
     }
 
     function handleKeyPress(event) {
-        if (event.code === "Enter") {
+        if (event.code === "Enter" || event.code=== "NumpadEnter") {
+            console.log(idNamePair);
+            handleOnBlur(event);
+        }
+    }
+
+    function handleOnBlur(event) {
+        if(idNamePair.name !== event.target.value){
             let id = event.target.id.substring("list-".length);
             store.changeListName(id, text);
-            toggleEdit();
         }
+        else{
+            //Cheap way of re-enabling the edit list buttons
+            store.loadIdNamePairs();
+        }
+        toggleEdit();
     }
 
     function handleUpdateText(event) {
         setText(event.target.value );
+    }
+
+    function handleDeleteList(event){
+        event.stopPropagation();
+        console.log("Inside handle delete list...");
+        let id = event.target.id.substring("delete-list-".length);
+        store.markListForDeletion(id);
     }
 
     let selectClass = "unselected-list-card";
@@ -75,6 +94,7 @@ function ListCard(props) {
                 disabled={cardStatus}
                 type="button"
                 id={"delete-list-" + idNamePair._id}
+                onClick = {handleDeleteList}
                 className="list-card-button"
                 value={"\u2715"}
             />
@@ -94,8 +114,10 @@ function ListCard(props) {
                 id={"list-" + idNamePair._id}
                 className='list-card'
                 type='text'
+                autoFocus
                 onKeyPress={handleKeyPress}
                 onChange={handleUpdateText}
+                onBlur = {handleOnBlur}
                 defaultValue={idNamePair.name}
             />;
     }

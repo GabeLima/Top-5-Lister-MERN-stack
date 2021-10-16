@@ -9,23 +9,32 @@ import { GlobalStoreContext } from '../store'
     
     @author McKilla Gorilla
 */
-function DeleteModal() {
+function DeleteModal(props) {
     const { store } = useContext(GlobalStoreContext);
+    const { markedForDeletion} = props;
     let name = "";
     if (store.currentList) {
         name = store.currentList.name;
     }
     function handleDeleteList(event) {
+        event.stopPropagation();
         store.deleteMarkedList();
     }
     function handleCloseModal(event) {
+        event.stopPropagation();
         store.hideDeleteListModal();
     }
+    let visibleClass = "modal";
+    // if(markedForDeletion === true){
+    //     visibleClass = ".modal.is-visible";
+    //     console.log("list isn't marked for deletion, somehow make delete modal visible");
+    // }
     return (
         <div
-            className="modal"
+            className={visibleClass}
             id="delete-modal"
-            data-animation="slideInOutLeft">
+            data-animation="slideInOutLeft"
+            >
             <div className="modal-dialog">
                 <header className="dialog-header">
                     Delete the {name} Top 5 List?
