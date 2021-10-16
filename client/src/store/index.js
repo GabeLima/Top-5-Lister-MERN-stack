@@ -243,6 +243,15 @@ export const useGlobalStore = () => {
                     type: GlobalStoreActionType.LOAD_ID_NAME_PAIRS,
                     payload: pairsArray
                 });
+                let minId = 0;
+                for(let i = 0; i < response.data.idNamePairs.length; i++){
+                    if (response.data.idNamePairs[i].name.includes("Untitled List ")){
+                        minId = parseInt(response.data.idNamePairs[i].name.substring("Untitled List ".length))
+                        if(minId >= store.newListCounter){
+                            store.newListCounter = minId + 1;
+                        }
+                    }
+                }
             }
             else {
                 console.log("API FAILED TO GET THE LIST PAIRS");
@@ -374,11 +383,12 @@ export const useGlobalStore = () => {
         asyncMarkListForDeletion(id);
     }
 
-    store.showDeleteModal = function(){
-        console.log("Current list before opening the delete modal: ", store.currentList);
-        let modal = document.getElementById("delete-modal");
-        modal.classList.add("is-visible");
-    }
+    // store.showDeleteModal = function(event){
+    //     event.stopProagation();
+    //     console.log("Current list before opening the delete modal: ", store.currentList);
+    //     let modal = document.getElementById("delete-modal");
+    //     modal.classList.add("is-visible");
+    // }
 
     store.isAListMarkedForDeletion = function(){
         if(!store){
@@ -421,9 +431,11 @@ export const useGlobalStore = () => {
             }
         }
         //asyncDeleteList("API FAILED TO FIND THE LIST MARKED FOR DELETION: ", store.listMarkedForDeletion);
-        asyncDeleteList();
-        store.hideDeleteListModal();
-        store.loadIdNamePairs();
+        asyncDeleteList().then(value => {
+            console.log("Promise value from deleting: ", value);
+            store.hideDeleteListModal();
+            store.loadIdNamePairs();
+        });
     }
     window.addEventListener("unhandledrejection", function(promiseRejectionEvent) { 
         console.log("ERROR EVENT HANDLER");

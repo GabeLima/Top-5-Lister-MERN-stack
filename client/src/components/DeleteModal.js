@@ -17,9 +17,11 @@ function DeleteModal(props) {
         name = store.currentList.name;
     }
     function handleDeleteList(event) {
+        event.stopPropagation();
         store.deleteMarkedList();
     }
     function handleCloseModal(event) {
+        event.stopPropagation();
         store.hideDeleteListModal();
     }
     let visibleClass = "modal";
