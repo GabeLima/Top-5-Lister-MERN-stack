@@ -20,64 +20,36 @@ function ListCard(props) {
             let _id = event.target.id;
             if (_id.indexOf('list-card-text-') >= 0)
                 _id = ("" + _id).substring("list-card-text-".length);
-            
-                handleUpdateText(event);
+
             // CHANGE THE CURRENT LIST
             store.setCurrentList(_id);
         }
     }
 
     function handleToggleEdit(event) {
-        console.log("Handle toggle eddit called");
         event.stopPropagation();
         toggleEdit();
     }
 
     function toggleEdit() {
         let newActive = !editActive;
-        console.log("newActive: ", newActive);
         if (newActive) {
             store.setIsListNameEditActive();
         }
-        // else{
-        //     store.setIsListNameEditActive
-        // }
         setEditActive(newActive);
     }
 
     function handleKeyPress(event) {
-        handleUpdateText(event);
-        console.log(text);
-        console.log(event.code);
-        if (event.code === "Enter" || event.code=== "NumpadEnter") {
+        if (event.code === "Enter") {
             let id = event.target.id.substring("list-".length);
-            console.log("Id: ", id);
-            store.changeListName(id, event.target.value);
-            console.log("calling toggle edit from key press...");
+            store.changeListName(id, text);
             toggleEdit();
         }
     }
 
-    function handleBlur(event){
-        handleUpdateText(event);
-        let id = event.target.id.substring("list-".length);
-        console.log("calling toggle edit from blur...");
-        toggleEdit();
-    }
-
     function handleUpdateText(event) {
-        console.log("updating text to :", event.target.value )
         setText(event.target.value );
     }
-
-    function handleDelete(event){
-        //need to pull up the modal here...
-        console.log("calling handle delete...");
-        // let id = event.target.id.substring("delete-list-".length);
-        // store.deleteList(id);
-        // store.loadIdNamePairs();
-    }
-
 
     let selectClass = "unselected-list-card";
     if (selected) {
@@ -103,7 +75,6 @@ function ListCard(props) {
                 disabled={cardStatus}
                 type="button"
                 id={"delete-list-" + idNamePair._id}
-                onClick = {handleDelete}
                 className="list-card-button"
                 value={"\u2715"}
             />
@@ -125,9 +96,7 @@ function ListCard(props) {
                 type='text'
                 onKeyPress={handleKeyPress}
                 onChange={handleUpdateText}
-                onBlur = {handleBlur}
                 defaultValue={idNamePair.name}
-                autoFocus
             />;
     }
     return (

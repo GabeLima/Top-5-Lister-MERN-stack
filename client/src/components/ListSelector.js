@@ -18,7 +18,6 @@ const ListSelector = () => {
 
     let listCard = "";
     if (store) {
-        // console.log("Mapping ids to lists...", store.idNamePairs);
         listCard = store.idNamePairs.map((pair) => (
             <ListCard
                 key={pair._id}
