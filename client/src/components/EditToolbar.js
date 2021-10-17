@@ -64,7 +64,7 @@ function EditToolbar() {
     if (store.isListNameEditActive) {
         editStatus = true;
     }
-    console.log("Item active: ", store.itemActive);
+    console.log("Inside edit toolbar, item active: ", store.itemActive);
     return (
         <div id="edit-toolbar">
             <div

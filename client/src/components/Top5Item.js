@@ -44,11 +44,12 @@ function Top5Item(props) {
     }
 
     function handleOnClick(event, newEditNumber) {
-        store.setItemActive(true);
-        console.log("Item active updated: ", store.itemActive);
+        console.log("Inside handle on Click---------------------------------------- !!!!!!!!!!!!!!!!!!!!!!");
         event.preventDefault();
+        store.setItemActive(true);
+        console.log("Item active updated from handleOnClick to true, current value: ", store.itemActive);
         event.autoFocus = true;
-        console.log("New index number: ", newEditNumber);
+        //console.log("New index number: ", newEditNumber);
         setEditNumber(newEditNumber);
     }
 
@@ -60,15 +61,18 @@ function Top5Item(props) {
 
     function handleBlur(event) {
         event.preventDefault();
+        console.log("Inside handle blur----------------------------------------");
         store.setItemActive(false);
-        console.log("Item active updated: ", store.itemActive);
+        // while(store.itemActive != false){
+        // }
+        console.log("Item active updated to false, current value: ", store.itemActive);
         setEditNumber(-1);
         saveAndUpdate(event)
     }
 
     function saveAndUpdate(event){
         console.log("Inside save and update...");
-        console.log("Value inside event: ", event.target.value);
+        //console.log("Value inside event: ", event.target.value);
         let newText = event.target.value;
         // If they're not the same text, create a transaction to update the text and save it!
         if (newText !== props.text){

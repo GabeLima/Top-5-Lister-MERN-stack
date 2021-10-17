@@ -120,7 +120,7 @@ export default class jsTPS {
      * there are transactions on the stack that can be undone.
      */
     hasTransactionToUndo() {
-        console.log("this.mostRecentTransaction: ", this.mostRecentTransaction);
+        //console.log("this.mostRecentTransaction: ", this.mostRecentTransaction);
         return this.mostRecentTransaction >= 0;
     }
 

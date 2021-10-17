@@ -38,7 +38,10 @@ export const useGlobalStore = () => {
         newListCounter: 0,
         listNameActive: false,
         itemActive: false,
-        listMarkedForDeletion: null
+        listMarkedForDeletion: null,
+        isListNameEditActive: false,
+        isItemEditActive: false
+
     });
 
     // HERE'S THE DATA STORE'S REDUCER, IT MUST
@@ -48,6 +51,7 @@ export const useGlobalStore = () => {
         switch (type) {
             // LIST UPDATE OF ITS NAME
             case GlobalStoreActionType.CHANGE_LIST_NAME: {
+                console.log("CHANGE_LIST_NAME reducer called");
                 return setStore({
                     idNamePairs: payload.idNamePairs,
                     currentList: payload.top5List,
@@ -60,6 +64,7 @@ export const useGlobalStore = () => {
             }
             // STOP EDITING THE CURRENT LIST
             case GlobalStoreActionType.CLOSE_CURRENT_LIST: {
+                console.log("CLOSE_CURRENT_LIST reducer called");
                 return setStore({
                     idNamePairs: store.idNamePairs,
                     currentList: null,
@@ -72,6 +77,7 @@ export const useGlobalStore = () => {
             }
             // GET ALL THE LISTS SO WE CAN PRESENT THEM
             case GlobalStoreActionType.LOAD_ID_NAME_PAIRS: {
+                console.log("LOAD_ID_NAME_PAIRS reducer called");
                 return setStore({
                     idNamePairs: payload,
                     currentList: null,
@@ -84,6 +90,7 @@ export const useGlobalStore = () => {
             }
             // UPDATE A LIST
             case GlobalStoreActionType.SET_CURRENT_LIST: {
+                console.log("SET_CURRENT_LIST reducer called");
                 return setStore({
                     idNamePairs: store.idNamePairs,
                     currentList: payload,
@@ -91,11 +98,12 @@ export const useGlobalStore = () => {
                     isListNameEditActive: false,
                     isItemEditActive: false,
                     listMarkedForDeletion: null,
-                    itemActive: store.itemActive
+                    itemActive: false
                 });
             }
             // START EDITING A LIST NAME
             case GlobalStoreActionType.SET_LIST_NAME_EDIT_ACTIVE: {
+                console.log("SET_LIST_NAME_EDIT_ACTIVE reducer called");
                 return setStore({
                     idNamePairs: store.idNamePairs,
                     currentList: payload,
@@ -108,6 +116,7 @@ export const useGlobalStore = () => {
             }
             //START DELETING A LIST
             case GlobalStoreActionType.SET_LIST_MARKED_FOR_DELETION: {
+                console.log("SET_LIST_MARKED_FOR_DELETION reducer called");
                 let newListMarkedForDeletion = null;
                 let newCurrentList = null;
                 if(payload !== null){
@@ -126,6 +135,7 @@ export const useGlobalStore = () => {
             }
             // INCREMENT LIST COUNTER
             case GlobalStoreActionType.INCREMENT_LIST_COUNTER: {
+                console.log("INCREMENT_LIST_COUNTER reducer called");
                 return setStore({
                     idNamePairs: store.idNamePairs,
                     currentList: store.currentList,
@@ -137,6 +147,7 @@ export const useGlobalStore = () => {
                 });
             }
             case GlobalStoreActionType.SET_ITEM_ACTIVE: {
+                console.log("Item active reducer called");
                 return setStore({
                     idNamePairs: store.idNamePairs,
                     currentList: store.currentList,
@@ -443,10 +454,14 @@ export const useGlobalStore = () => {
     });
 
     store.setItemActive = function (bool) {
-        storeReducer({
-            type: GlobalStoreActionType.SET_ITEM_ACTIVE,
-            payload: bool
-        });
+        async function setItem(bool) {
+            console.log("Inside setItemActive fn, setting item active to: ", bool);
+            storeReducer({
+                type: GlobalStoreActionType.SET_ITEM_ACTIVE,
+                payload: bool
+            });
+        }
+        setItem(bool);
     }
 
 
