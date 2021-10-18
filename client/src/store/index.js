@@ -283,11 +283,11 @@ export const useGlobalStore = () => {
 
                 response = await api.updateTop5ListById(top5List._id, top5List);
                 if (response.data.success) {
+                    store.history.push("/top5list/" + top5List._id);
                     storeReducer({
                         type: GlobalStoreActionType.SET_CURRENT_LIST,
                         payload: top5List
                     });
-                    store.history.push("/top5list/" + top5List._id);
                 }
             }
         }

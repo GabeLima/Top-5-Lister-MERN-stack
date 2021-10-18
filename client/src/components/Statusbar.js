@@ -1,5 +1,6 @@
 import { useContext } from 'react'
 import { GlobalStoreContext } from '../store'
+import { useHistory } from 'react-router-dom'
 /*
     Our Status bar React component goes at the bottom of our UI.
     
@@ -7,8 +8,15 @@ import { GlobalStoreContext } from '../store'
 */
 function Statusbar() {
     const { store } = useContext(GlobalStoreContext);
+    //store.history = useHistory();
+    const history = useHistory();
     let text ="";
-    if (store.currentList && store.listMarkedForDeletion == null)
+    console.log(store.listMarkedForDeletion);
+    console.log(store.currentList);
+    let pathName = history.location.pathname;
+    //console.log(pathName);
+    //if(pathName.includes("/"))
+    if (store.currentList != null && pathName.includes("/top5list/"))
         text = store.currentList.name;
     return (
         <div id="top5-statusbar">
